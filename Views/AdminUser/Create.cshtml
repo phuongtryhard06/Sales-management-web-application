@@ -1,0 +1,136 @@
+@model FreshMart.Models.User
+@{
+    ViewData["Title"] = "Thêm người dùng mới";
+}
+@{
+    ViewData["Title"] = "Add User";
+}
+
+<div class="container mt-3" style="max-width: 720px;">
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-light p-2 rounded-3 shadow-sm">
+            <li class="breadcrumb-item"><a href="/Admin/Dashboard">Bảng điều khiển</a></li>
+            <li class="breadcrumb-item"><a href="/AdminUser">Người dùng</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Thêm người dùng</li>
+        </ol>
+    </nav>
+
+    <!-- Card -->
+    <div class="card shadow-lg border-0 p-4 rounded-4">
+
+        <div class="text-center mb-3">
+            <div style="
+                width: 80px;
+                height: 80px;
+                border-radius: 50%;
+                background: #e9f7ef;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 36px;
+                color: #198754;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            ">
+                👤
+            </div>
+        </div>
+
+        <h2 class="fw-bold text-success text-center mb-4">Thêm người dùng mới</h2>
+
+        <!-- Form -->
+        <form method="post" novalidate>
+            @Html.AntiForgeryToken()
+
+            <!-- FULL NAME -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Họ tên</label>
+                <input asp-for="FullName"
+                       class="form-control rounded-3 shadow-sm"
+                       placeholder="Nhập họ tên đầy đủ" />
+
+                <span class="text-danger">@Html.ValidationMessageFor(m => m.FullName)</span>
+            </div>
+
+            <!-- EMAIL -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Địa chỉ Email</label>
+                <input asp-for="Email"
+                       class="form-control rounded-3 shadow-sm"
+                       placeholder="Nhập email" />
+
+                <span class="text-danger">@Html.ValidationMessageFor(m => m.Email)</span>
+            </div>
+
+            <!-- PASSWORD -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Mật khẩu</label>
+                <div class="input-group">
+                    <input asp-for="Password"
+                           id="passwordField"
+                           class="form-control rounded-start-3 shadow-sm"
+                           placeholder="Thiết lập mật khẩu" />
+
+                    <span class="input-group-text bg-light border-0 rounded-end-3"
+                          style="cursor:pointer" onclick="togglePassword('passwordField')">
+                        👁️
+                    </span>
+                </div>
+
+                <span class="text-danger">@Html.ValidationMessageFor(m => m.Password)</span>
+            </div>
+
+            <!-- CONFIRM PASSWORD -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Xác nhận mật khẩu</label>
+                <div class="input-group">
+                    <input asp-for="ConfirmPassword"
+                           id="confirmField"
+                           class="form-control rounded-start-3 shadow-sm"
+                           placeholder="Nhập lại mật khẩu" />
+
+                    <span class="input-group-text bg-light border-0 rounded-end-3"
+                          style="cursor:pointer" onclick="togglePassword('confirmField')">
+                        👁️
+                    </span>
+                </div>
+
+                <span class="text-danger">@Html.ValidationMessageFor(m => m.ConfirmPassword)</span>
+            </div>
+
+            <!-- ROLE -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Vai trò người dùng</label>
+                <select asp-for="Role" class="form-select shadow-sm rounded-3">
+                    <option value="Customer">Khách hàng</option>
+                    <option value="Admin">Admin</option>
+                </select>
+
+                <span class="text-danger">@Html.ValidationMessageFor(m => m.Role)</span>
+            </div>
+
+            <!-- SUBMIT -->
+            <button class="btn btn-success w-100 mt-3 fw-bold rounded-3 py-2">
+                ➕ Tạo người dùng
+            </button>
+
+        </form>
+
+    </div>
+</div>
+
+<script>
+    function togglePassword(id) {
+        var field = document.getElementById(id);
+        field.type = field.type === "password" ? "text" : "password";
+    }
+</script>
+
+<style>
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #198754 !important;
+        box-shadow: 0 0 0 .15rem rgba(25, 135, 84, .25) !important;
+    }
+</style>

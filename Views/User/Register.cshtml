@@ -1,0 +1,101 @@
+@model FreshMart.Models.User
+
+@{
+    ViewData["Title"] = "Đăng ký";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng ký - BizFlow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/site.css" />
+</head>
+<body style="margin:0;">
+
+<div class="auth-wrapper">
+    <div class="auth-card" style="animation: pageIn 0.5s ease-out;">
+
+        <!-- LEFT: Illustration -->
+        <div class="auth-illustration d-none d-md-flex">
+            <div class="auth-illustration-icon">🌿</div>
+            <h2>Tham gia BizFlow!</h2>
+            <p>Tạo tài khoản miễn phí để trải nghiệm mua sắm thực phẩm tươi ngon.</p>
+        </div>
+
+        <!-- RIGHT: Form -->
+        <div class="auth-form-side">
+            <div class="d-flex align-items-center gap-2 mb-4">
+                <i class="fa-solid fa-chart-line" style="color:var(--accent);font-size:28px;"></i>
+                <span style="font-weight:800;font-size:22px;color:var(--accent);">BizFlow</span>
+            </div>
+
+            <div class="auth-form-title">Đăng ký</div>
+            <div class="auth-form-subtitle">Điền thông tin để tạo tài khoản mới</div>
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger d-flex align-items-center" style="border-radius:var(--radius-md);font-size:14px;">
+                    <i class="fa-solid fa-circle-xmark me-2"></i> @ViewBag.Error
+                </div>
+            }
+
+            <form asp-action="Register" method="post" data-loading>
+                <div class="mb-3">
+                    <label class="fm-label">Họ và tên</label>
+                    <input asp-for="FullName" class="fm-input" placeholder="Nguyễn Văn A" />
+                    <span asp-validation-for="FullName" class="text-danger" style="font-size:12px;"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="fm-label">Email</label>
+                    <input asp-for="Email" class="fm-input" placeholder="example@email.com" />
+                    <span asp-validation-for="Email" class="text-danger" style="font-size:12px;"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="fm-label">Mật khẩu</label>
+                    <input asp-for="Password" class="fm-input" type="password" placeholder="Tối thiểu 6 ký tự" />
+                    <span asp-validation-for="Password" class="text-danger" style="font-size:12px;"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="fm-label">Xác nhận mật khẩu</label>
+                    <input asp-for="ConfirmPassword" class="fm-input" type="password" placeholder="Nhập lại mật khẩu" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger" style="font-size:12px;"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label class="fm-label">Loại tài khoản</label>
+                    <select asp-for="Role" class="fm-input">
+                        <option value="Customer">Khách hàng</option>
+                        <option value="Admin">Quản trị viên</option>
+                    </select>
+                    <span asp-validation-for="Role" class="text-danger" style="font-size:12px;"></span>
+                </div>
+
+                <button class="btn-accent d-block w-100" type="submit" style="padding:14px;font-size:15px;justify-content:center;">
+                    <i class="fa-solid fa-user-plus me-1"></i> Đăng ký
+                </button>
+            </form>
+
+            <div class="text-center mt-4" style="font-size:14px;color:var(--text-muted);">
+                Đã có tài khoản?
+                <a href="/User/Login" style="font-weight:600;">Đăng nhập</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/lib/jquery/dist/jquery.min.js"></script>
+<script src="/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script src="/js/site.js"></script>
+</body>
+</html>

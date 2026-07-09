@@ -1,0 +1,167 @@
+
+
+
+@model FreshMart.Models.Product
+@{
+    ViewData["Title"] = "Chi tiết Sản phẩm";
+}
+
+<style>
+
+    .product-details-card {
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0px 10px 30px rgba(0,0,0,0.08);
+        margin-top: 30px;
+    }
+
+    .product-image-large {
+        width: 100%;
+        max-width: 420px;
+        border-radius: 16px;
+        object-fit: cover;
+        box-shadow: 0px 5px 20px rgba(0,0,0,0.10);
+    }
+
+    .product-title {
+        font-size: 32px;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+
+    .product-category {
+        font-size: 16px;
+        color: #666;
+        margin-bottom: 5px;
+    }
+
+    .product-weight {
+        color: #444;
+        margin-bottom: 15px;
+    }
+
+    .product-price {
+        font-size: 28px;
+        font-weight: 800;
+        color: #16a34a;
+        margin-bottom: 20px;
+    }
+
+    .product-description {
+        font-size: 18px;
+        color: #555;
+        line-height: 1.6;
+        margin-bottom: 25px;
+    }
+
+    
+
+    .btn-back-premium {
+        display: inline-block;
+        padding: 12px 34px;
+        background: #f3f4f6; /* Light grey */
+        color: #374151; /* Slate */
+        font-weight: 600;
+        font-size: 16px;
+        border-radius: 40px;
+        text-decoration: none;
+        border: 2px solid #e5e7eb;
+        transition: 0.25s ease;
+        margin-top: 18px;
+    }
+
+        .btn-back-premium:hover {
+            background: #e5e7eb;
+            border-color: #d1d5db;
+            transform: translateY(-3px);
+            color: #111827;
+        }
+
+
+    .btn-addtocart-premium {
+        display: inline-block;
+        padding: 14px 40px;
+        background: #22c55e; /* Green */
+        color: white;
+        font-weight: 700;
+        font-size: 18px;
+        border-radius: 40px;
+        text-decoration: none;
+        transition: 0.25s ease;
+        margin-top: 12px;
+        box-shadow: 0px 6px 15px rgba(34, 197, 94, 0.25);
+    }
+
+        .btn-addtocart-premium:hover {
+            background: #16a34a;
+            transform: translateY(-3px);
+            box-shadow: 0px 10px 22px rgba(34, 197, 94, 0.35);
+        }
+
+</style>
+
+
+
+<div class="container">
+
+    <div class="row product-details-card">
+
+        <!-- IMAGE -->
+        <div class="col-md-5 text-center">
+            <img src="~/uploads/@Model.ImagePath" 
+                 class="product-image-large" 
+                 alt="@Model.Name"
+                 onerror="this.onerror=null; this.src='/images/placeholder.svg'; this.style.backgroundColor='#f3f4f6';" />
+        </div>
+
+        <!-- DETAILS -->
+        <div class="col-md-7">
+
+            <h1 class="product-title">@Model.Name</h1>
+            <p class="product-category">
+                Danh mục: <strong>@Model.Category.CategoryName</strong>
+            </p>
+
+
+            <p class="product-weight">@Model.Weight</p>
+
+            <p class="product-price">@Model.Price.ToString("N0") ₫</p>
+
+            <div class="mb-4">
+                @if (Model.Stock > 0)
+                {
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill">
+                        <i class="fa-solid fa-check-circle me-1"></i> Còn <strong>@Model.Stock</strong> sản phẩm
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill">
+                        <i class="fa-solid fa-times-circle me-1"></i> Hết hàng
+                    </span>
+                }
+            </div>
+
+            <p class="product-description">@Model.Description</p>
+
+            <div class="product-actions-wrap">
+                <form asp-action="Add" asp-controller="Cart" asp-route-id="@Model.ProductId" method="post" class="ajax-cart-form">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn-detail-main btn-detail-cart" @(Model.Stock <= 0 ? "disabled" : "")>
+                        <i class="fa-solid fa-cart-shopping me-2"></i> 
+                        @(Model.Stock <= 0 ? "Hết hàng" : "Thêm vào giỏ")
+                    </button>
+                </form>
+
+                <a href="/Products" class="btn-detail-main btn-detail-back">
+                    <i class="fa-solid fa-arrow-left me-2"></i> Trở lại
+                </a>
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,368 @@
+
+
+@model List<FreshMart.Models.Product>
+
+@{
+    ViewData["Title"] = ViewBag.CategoryName;
+}
+
+<h2 class="category-title">@ViewBag.CategoryName</h2>
+<!-- SEARCH BAR -->
+<div class="top-bar d-flex justify-content-between align-items-center mb-4">
+
+    <!-- SEARCH -->
+    <div class="search-wrapper">
+        <div class="search-box">
+            <i class="bi bi-search"></i>
+            <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm...">
+        </div>
+    </div>
+
+    <!-- SORT -->
+    <select id="sortSelect" class="sort-box">
+        <option value="default">Sắp xếp theo</option>
+        <option value="newest">Mới nhất</option>
+        <option value="priceLowHigh">Giá: Thấp đến Cao</option>
+        <option value="priceHighLow">Giá: Cao đến Thấp</option>
+        <option value="nameAZ">Tên: A → Z</option>
+        <option value="nameZA">Tên: Z → A</option>
+    </select>
+
+</div>
+
+
+<div class="row g-4">
+    @foreach (var p in Model)
+    {
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+            <div class="card-product">
+
+                <!-- IMAGE -->
+                <div class="card-img">
+                    <img src="~/uploads/@p.ImagePath" alt="@p.Name" />
+                </div>
+
+                <!-- BODY -->
+                <div class="card-body">
+                    <h5 class="card-title">@p.Name</h5>
+                    <p class="card-price">@p.Price.ToString("N0") ₫</p>
+
+                    <div class="card-actions">
+                        <a href="/Products/Details/@p.ProductId" class="btn-view">Chi tiết</a>
+                        <a href="/Cart/Add/@p.ProductId" class="btn-add">+ Thêm</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+
+    /* ---------- Page Title ---------- */
+    .category-title {
+        font-size: 34px;
+        font-weight: 800;
+        color: #7C3AED;
+        margin-bottom: 15px;
+    }
+
+    /* ---------- Sorting Dropdown ---------- */
+    .sort-dropdown {
+        padding: 8px 16px;
+        border-radius: 25px;
+        border: 2px solid #7C3AED;
+        font-weight: 600;
+        color: #7C3AED;
+        cursor: pointer;
+        outline: none;
+    }
+
+    /* ---------- Product Card ---------- */
+    .card-product {
+        background: #ffffff;
+        border-radius: 18px;
+        box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+        overflow: hidden;
+        transition: 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .card-product:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 14px 30px rgba(0,0,0,0.12);
+        }
+
+    /* ---------- Image ---------- */
+    .card-img {
+        height: 210px;
+        overflow: hidden;
+        border-radius: 18px 18px 0 0;
+    }
+
+        .card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.35s ease;
+        }
+
+    .card-product:hover .card-img img {
+        transform: scale(1.08);
+    }
+
+    /* ---------- Body ---------- */
+    .card-body {
+        padding: 16px;
+        text-align: center;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .card-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+        min-height: 40px;
+    }
+
+    .card-price {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #24a148;
+        margin-bottom: 14px;
+    }
+
+    /* ---------- Buttons ---------- */
+    .card-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: auto;
+    }
+
+    .btn-view,
+    .btn-add {
+        padding: 8px 18px;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.25s ease;
+    }
+
+    .btn-view {
+        border: 2px solid #198754;
+        color: #198754;
+    }
+
+        .btn-view:hover {
+            background: #198754;
+            color: #fff;
+        }
+
+    .btn-add {
+        background: #22C55E;
+        border: 2px solid #22C55E;
+        color: #fff;
+    }
+
+        .btn-add:hover {
+            background: #22C55E;
+            border-color: #22C55E;
+        }
+    /* ---------- SEARCH BAR ---------- */
+    .search-wrapper {
+        max-width: 350px;
+        margin-bottom: 25px;
+    }
+
+    .search-box {
+        width: 100%;
+        padding: 12px 20px;
+        border-radius: 30px;
+        border: 2px solid #7C3AED;
+        font-size: 16px;
+        outline: none;
+        transition: 0.25s ease;
+    }
+
+        .search-box:focus {
+            border-color: #5b22c8;
+            box-shadow: 0 0 8px rgba(124, 58, 237, 0.3);
+        }
+
+
+    /* =======================
+       PAGE TITLE
+    ======================= */
+    .category-title {
+        font-size: 38px;
+        font-weight: 800;
+        color: #7C3AED;
+        margin-bottom: 25px;
+    }
+
+    /* =======================
+       TOP BAR LAYOUT
+    ======================= */
+    .top-bar {
+        max-width: 100%;
+    }
+
+    /* =======================
+       SEARCH BOX (Premium)
+    ======================= */
+    .search-wrapper {
+        flex: 1;
+        max-width: 420px;
+    }
+
+    .search-box {
+        display: flex;
+        align-items: center;
+        padding: 12px 18px;
+        border-radius: 35px;
+        border: 2px solid #7C3AED;
+        background: white;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        transition: 0.25s ease;
+    }
+
+        .search-box:focus-within {
+            border-color: #5c23d2;
+            box-shadow: 0 4px 14px rgba(124, 58, 237, 0.25);
+        }
+
+        .search-box i {
+            font-size: 20px;
+            color: #7C3AED;
+            margin-right: 10px;
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 15px;
+        }
+
+    /* =======================
+       SORT DROPDOWN
+    ======================= */
+    .sort-box {
+        padding: 10px 18px;
+        border-radius: 30px;
+        border: 2px solid #7C3AED;
+        background: white;
+        font-weight: 600;
+        color: #7C3AED;
+        outline: none;
+        cursor: pointer;
+        transition: 0.25s;
+    }
+
+        .sort-box:hover {
+            background: #7C3AED;
+            color: white;
+        }
+
+    /* =======================
+       PRODUCT GRID
+    ======================= */
+    .prod-card {
+        border-radius: 20px;
+        overflow: hidden;
+        background: white;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.10);
+        transition: 0.3s ease;
+        height: 100%;
+    }
+
+        .prod-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+
+    .prod-img {
+        height: 220px;
+        overflow: hidden;
+    }
+
+        .prod-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.4s;
+        }
+
+    .prod-card:hover .prod-img img {
+        transform: scale(1.06);
+    }
+
+    .prod-body {
+        padding: 20px;
+        text-align: center;
+    }
+
+    .prod-title {
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .prod-price {
+        font-size: 22px;
+        font-weight: 800;
+        color: #2AA54D;
+    }
+
+</style>
+
+<script>
+    function sortProducts(criteria) {
+        const container = document.querySelector(".row.g-4");
+        const cards = Array.from(container.children);
+
+        cards.sort((a, b) => {
+            const nameA = a.querySelector(".card-title").innerText.toLowerCase();
+            const nameB = b.querySelector(".card-title").innerText.toLowerCase();
+
+            const priceA = parseFloat(a.querySelector(".card-price").innerText.replace(/[^0-9]/g, ""));
+            const priceB = parseFloat(b.querySelector(".card-price").innerText.replace(/[^0-9]/g, ""));
+
+            switch (criteria) {
+                case "priceLowHigh": return priceA - priceB;
+                case "priceHighLow": return priceB - priceA;
+                case "nameAZ": return nameA.localeCompare(nameB);
+                case "nameZA": return nameB.localeCompare(nameA);
+            }
+        });
+
+        cards.forEach(card => container.appendChild(card));
+    }
+
+    document.getElementById("sortSelect").addEventListener("change", function () {
+        if (this.value !== "default") {
+            sortProducts(this.value);
+        }
+    });
+        // LIVE SEARCH FUNCTION
+    document.getElementById("searchInput").addEventListener("keyup", function () {
+        let keyword = this.value.toLowerCase();
+
+        document.querySelectorAll(".card-product").forEach(card => {
+            let title = card.querySelector(".card-title").innerText.toLowerCase();
+
+            if (title.includes(keyword)) {
+                card.parentElement.style.display = "block";
+            } else {
+                card.parentElement.style.display = "none";
+            }
+        });
+    });
+
+</script>

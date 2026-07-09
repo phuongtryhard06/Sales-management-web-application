@@ -1,0 +1,52 @@
+@model FreshMart.Models.Category
+
+@{
+    ViewData["Title"] = "Thêm danh mục mới";
+}
+
+@using FreshMart.Models
+
+<style>
+    .form-control:focus, textarea:focus {
+        border-color: #198754 !important;
+        box-shadow: 0 0 0 .15rem rgba(25,135,84,.25) !important;
+    }
+</style>
+
+<div class="container mt-4" style="max-width: 650px;">
+    <div class="card shadow-lg border-0 p-4 rounded-4">
+
+        <h2 class="fw-bold text-success mb-4 text-center">Thêm danh mục mới</h2>
+
+        <form method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Tên danh mục</label>
+                <input type="text" name="CategoryName"
+                       class="form-control rounded-3 shadow-sm"
+                       placeholder="Nhập tên danh mục"
+                       required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Mô tả</label>
+                <textarea name="Description" rows="3"
+                          class="form-control rounded-3 shadow-sm"
+                          placeholder="Nhập mô tả (tùy chọn)"></textarea>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a href="/AdminCategory" class="btn btn-outline-secondary px-4 rounded-3">
+                    &larr; Quay lại
+                </a>
+
+                <button class="btn btn-success px-4 rounded-3 fw-bold">
+                    Lưu danh mục
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>

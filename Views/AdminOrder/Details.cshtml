@@ -1,0 +1,213 @@
+@model FreshMart.Models.Order
+
+@{
+    ViewData["Title"] = $"Chi tiết Đơn hàng #{Model.OrderId}";
+    string[] validStatuses = ViewBag.ValidStatuses;
+}
+
+<!-- PAGE HEADER -->
+<div class="d-flex align-items-center justify-content-between mb-4 stagger-item">
+    <div>
+        <a href="/AdminOrder" class="text-muted" style="font-size:13px; text-decoration:none;">
+            <i class="fa-solid fa-arrow-left me-1"></i> Quay lại danh sách
+        </a>
+        <h4 class="fw-bold mt-1 mb-0" style="color:var(--text-primary);">
+            <i class="fa-solid fa-receipt me-2" style="color:var(--accent);"></i>
+            Đơn hàng #@Model.OrderId
+        </h4>
+    </div>
+
+    <!-- CẬP NHẬT TRẠNG THÁI -->
+    <div class="d-flex align-items-center gap-2">
+        @{
+            var currentBadge = Model.Status switch {
+                "Completed" => ("badge-status completed", "✅ Hoàn thành"),
+                "Cancelled" => ("badge-status cancelled", "❌ Đã hủy"),
+                _ => ("badge-status pending", "⏳ Chờ xử lý")
+            };
+        }
+        <span class="@currentBadge.Item1" style="font-size:13px; padding: 6px 14px;">
+            @currentBadge.Item2
+        </span>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- THÔNG TIN ĐƠN HÀNG -->
+    <div class="col-lg-5">
+        <div class="fm-card stagger-item">
+            <div class="fm-card-body">
+                <h6 class="fw-bold mb-3" style="color:var(--text-muted); text-transform:uppercase; font-size:11px; letter-spacing:1px;">
+                    <i class="fa-solid fa-user me-1"></i> Thông tin khách hàng
+                </h6>
+
+                <div class="mb-2">
+                    <span class="text-muted" style="font-size:12px;">Họ tên</span>
+                    <div class="fw-semibold">@Model.FullName</div>
+                </div>
+                <div class="mb-2">
+                    <span class="text-muted" style="font-size:12px;">Email</span>
+                    <div>@Model.Email</div>
+                </div>
+                <div class="mb-2">
+                    <span class="text-muted" style="font-size:12px;">Điện thoại</span>
+                    <div>@(string.IsNullOrEmpty(Model.Phone) ? "—" : Model.Phone)</div>
+                </div>
+                <div class="mb-2">
+                    <span class="text-muted" style="font-size:12px;">Địa chỉ giao hàng</span>
+                    <div>@Model.Address</div>
+                </div>
+                 <div class="mb-2">
+                    <span class="text-muted" style="font-size:12px;">Phương thức thanh toán</span>
+                    <div class="fw-semibold">
+                         @{
+                             var pmText = Model.PaymentMethod switch {
+                                 "Cash" => "Tiền mặt (COD)",
+                                 "Credit Card" => "Thẻ tín dụng",
+                                 "Debit Card" => "Thẻ ghi nợ",
+                                 _ => Model.PaymentMethod
+                             };
+                         }
+                         @pmText
+                    </div>
+                </div>
+
+                <hr style="border-color:var(--border);" />
+
+                <div class="mb-2">
+                    <span class="text-muted" style="font-size:12px;">Ngày đặt hàng</span>
+                    <div>@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</div>
+                </div>
+                @if (Model.UpdatedAt.HasValue)
+                {
+                    <div class="mb-2">
+                        <span class="text-muted" style="font-size:12px;">Cập nhật lần cuối</span>
+                        <div>@Model.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm")</div>
+                    </div>
+                }
+
+                <hr style="border-color:var(--border);" />
+
+                <!-- FORM CẬP NHẬT TRẠNG THÁI -->
+                <h6 class="fw-bold mb-2" style="font-size:13px;">Cập nhật trạng thái</h6>
+                <form asp-action="UpdateStatus" asp-controller="AdminOrder" asp-route-id="@Model.OrderId" method="post" class="d-flex gap-2 align-items-center">
+                    @Html.AntiForgeryToken()
+                    <select name="status" class="fm-input" style="flex:1;">
+                        @foreach (var s in validStatuses)
+                        {
+                            var sText = s switch {
+                                "Pending" => "⏳ Chờ xử lý",
+                                "Completed" => "✅ Hoàn thành",
+                                "Cancelled" => "❌ Đã hủy",
+                                _ => s
+                            };
+                            if (s == Model.Status)
+                            {
+                                <option value="@s" selected="selected">@sText</option>
+                            }
+                            else
+                            {
+                                <option value="@s">@sText</option>
+                            }
+                        }
+                    </select>
+                    <button type="submit" class="btn-accent" style="white-space:nowrap; padding: 10px 18px;">
+                        <i class="fa-solid fa-check me-1"></i> Lưu
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- DANH SÁCH SẢN PHẨM -->
+    <div class="col-lg-7">
+        <div class="fm-card stagger-item">
+            <div class="fm-card-body">
+                <h6 class="fw-bold mb-3" style="color:var(--text-muted); text-transform:uppercase; font-size:11px; letter-spacing:1px;">
+                    <i class="fa-solid fa-box me-1"></i> Sản phẩm trong đơn (@Model.Items.Count)
+                </h6>
+
+                @if (Model.Items == null || !Model.Items.Any())
+                {
+                    <div class="text-muted text-center py-4">Không có sản phẩm nào.</div>
+                }
+                else
+                {
+                    <div class="table-responsive" style="overflow: visible;">
+                        <table class="order-details-table w-100">
+                            <thead>
+                                <tr>
+                                    <th class="col-product">Sản phẩm</th>
+                                    <th class="col-qty text-center">SL</th>
+                                    <th class="col-price text-end">Đơn giá</th>
+                                    <th class="col-total text-end">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Items)
+                                {
+                                    <tr class="stagger-item">
+                                        <td class="col-product">
+                                            <div class="d-flex align-items-center gap-3">
+                                                @if (item.Product != null && !string.IsNullOrEmpty(item.Product.ImagePath))
+                                                {
+                                                    <img src="~/uploads/@item.Product.ImagePath"
+                                                         alt="@item.Product?.Name"
+                                                         style="width:48px;height:48px;object-fit:cover;border-radius:10px;box-shadow:var(--shadow-sm);"
+                                                         onerror="this.onerror=null;this.src='/images/placeholder.svg';" />
+                                                }
+                                                <div>
+                                                    <div class="fw-bold text-primary">@(item.Product?.Name ?? $"Sản phẩm #{item.ProductId}")</div>
+                                                    <div class="text-muted" style="font-size:12px;">ID: #@item.ProductId</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="col-qty text-center">
+                                            <span class="badge bg-light text-dark px-3 py-2 fw-bold" style="border-radius:8px;">
+                                                @item.Quantity
+                                            </span>
+                                        </td>
+                                        <td class="col-price text-end text-muted fw-medium">
+                                            @item.Price.ToString("N0") ₫
+                                        </td>
+                                        <td class="col-total text-end">
+                                            <span class="fw-bold text-accent" style="font-size:15px;">
+                                                @((item.Price * item.Quantity).ToString("N0")) ₫
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- TOTAL SECTION (Tách biệt rõ ràng) -->
+                    <div class="order-total-section stagger-item">
+                        <div class="d-flex justify-content-between w-100 mb-1" style="max-width: 300px;">
+                            <span class="text-muted">Tổng số mặt hàng:</span>
+                            <span class="fw-semibold">@Model.Items.Sum(i => i.Quantity)</span>
+                        </div>
+                        <div class="d-flex justify-content-between w-100 border-top pt-2" style="max-width: 300px; border-color: rgba(124, 58, 237, 0.1) !important;">
+                            <span class="order-total-label align-self-center">TỔNG CỘNG THANH TOÁN</span>
+                            <span class="order-total-value">@Model.TotalAmount.ToString("N0") ₫</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- INLINE STYLES -->
+<style>
+    .badge-status {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .badge-status.pending { background: rgba(245,158,11,0.15); color: #d97706; }
+    .badge-status.completed { background: rgba(34,197,94,0.15); color: #16a34a; }
+    .badge-status.cancelled { background: rgba(239,68,68,0.15); color: #dc2626; }
+</style>

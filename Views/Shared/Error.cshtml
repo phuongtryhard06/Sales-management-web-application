@@ -1,0 +1,26 @@
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Đã xảy ra lỗi";
+}
+
+<div class="container text-center" style="margin-top: 100px; margin-bottom: 100px;">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0" style="border-radius: 12px; padding: 40px;">
+                <i class="fa-solid fa-circle-exclamation text-danger" style="font-size: 60px; margin-bottom: 20px;"></i>
+                <h1 class="h3 fw-bold mb-3" style="color: var(--text-primary);">Rất tiếc! Đã xảy ra sự cố.</h1>
+                <p class="text-muted mb-4">
+                    Hệ thống đang gặp lỗi ngoài ý muốn. Chúng tôi đã ghi nhận sự cố và đang tiến hành khắc phục.
+                    Mong bạn thông cảm và thử lại sau.
+                </p>
+                @if (Model?.ShowRequestId == true)
+                {
+                    <p class="text-muted" style="font-size: 12px;">Mã lỗi tham chiếu: @Model.RequestId</p>
+                }
+                <div>
+                    <a href="/" class="btn btn-accent ripple mt-3">Quay lại trang chủ</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

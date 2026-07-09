@@ -1,0 +1,287 @@
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- PAGE HEADER -->
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h4 class="fw-bold mb-1" style="color:var(--text-primary);">Bảng điều khiển</h4>
+        <p class="text-muted mb-0" style="font-size:14px;">Tổng quan hoạt động cửa hàng</p>
+    </div>
+    <span class="badge-status admin" style="font-size:13px;">
+        <i class="fa-solid fa-shield-halved me-1"></i> Bảng quản trị
+    </span>
+</div>
+
+<!-- STAT CARDS ROW 1 -->
+<div class="row g-3 mb-4">
+    <div class="col-lg-3 col-md-6 stagger-item">
+        <div class="stat-card">
+            <div class="stat-icon purple"><i class="fa-solid fa-box"></i></div>
+            <div class="stat-value count-up" data-target="@ViewBag.TotalProducts">0</div>
+            <div class="stat-label">Sản phẩm</div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 stagger-item">
+        <div class="stat-card">
+            <div class="stat-icon green"><i class="fa-solid fa-folder"></i></div>
+            <div class="stat-value count-up" data-target="@ViewBag.TotalCategories">0</div>
+            <div class="stat-label">Danh mục</div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 stagger-item">
+        <div class="stat-card">
+            <div class="stat-icon blue"><i class="fa-solid fa-users"></i></div>
+            <div class="stat-value count-up" data-target="@ViewBag.TotalUsers">0</div>
+            <div class="stat-label">Người dùng</div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 stagger-item">
+        <div class="stat-card">
+            <div class="stat-icon orange"><i class="fa-solid fa-receipt"></i></div>
+            <div class="stat-value count-up" data-target="@ViewBag.TotalOrders">0</div>
+            <div class="stat-label">Đơn hàng</div>
+        </div>
+    </div>
+</div>
+
+<!-- STAT CARDS ROW 2: Revenue -->
+<div class="row g-3 mb-4">
+    <div class="col-lg-4 col-md-6 stagger-item">
+        <div class="stat-card">
+            <div class="stat-icon green"><i class="fa-solid fa-dollar-sign"></i></div>
+            <div class="stat-value count-up" data-target="@ViewBag.TotalRevenue" data-suffix=" ₫" data-decimals="0">0 ₫</div>
+            <div class="stat-label">Tổng doanh thu</div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6 stagger-item">
+        <div class="stat-card">
+            <div class="stat-icon blue"><i class="fa-solid fa-calendar-day"></i></div>
+            <div class="stat-value count-up" data-target="@ViewBag.TodaysOrders">0</div>
+            <div class="stat-label">Đơn hàng hôm nay</div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6 stagger-item">
+        <div class="stat-card">
+            <div class="stat-icon purple"><i class="fa-solid fa-chart-line"></i></div>
+            <div class="stat-value count-up" data-target="@ViewBag.AverageOrder" data-suffix=" ₫" data-decimals="0">0 ₫</div>
+            <div class="stat-label">Giá trị TB / đơn</div>
+        </div>
+    </div>
+</div>
+
+<!-- CHARTS -->
+<div class="row g-3 mb-4">
+    <div class="col-lg-6 stagger-item">
+        <div class="chart-card">
+            <h5><i class="fa-solid fa-chart-line me-2" style="color:var(--accent);"></i>Doanh thu 7 ngày qua</h5>
+            <canvas id="dailyRevenueChart" style="max-height:280px;"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-6 stagger-item">
+        <div class="chart-card">
+            <h5><i class="fa-solid fa-chart-bar me-2" style="color:var(--accent);"></i>Doanh thu theo danh mục</h5>
+            <canvas id="categoryChart" style="max-height:280px;"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-lg-4 stagger-item">
+        <div class="chart-card">
+            <h5><i class="fa-solid fa-credit-card me-2" style="color:var(--accent);"></i>Phương thức thanh toán</h5>
+            <canvas id="paymentChart" style="max-height:250px;"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-8 stagger-item">
+        <!-- QUICK ACTIONS -->
+        <div class="chart-card">
+            <h5><i class="fa-solid fa-bolt me-2" style="color:var(--accent);"></i>Thao tác nhanh</h5>
+            <div class="row g-3 mt-1">
+                <div class="col-md-4 col-6">
+                    <a href="/AdminProduct" class="quick-action-card">
+                        <div class="quick-action-icon"><i class="fa-solid fa-box"></i></div>
+                        <div class="quick-action-text">Quản lý SP</div>
+                    </a>
+                </div>
+                <div class="col-md-4 col-6">
+                    <a href="/AdminCategory" class="quick-action-card">
+                        <div class="quick-action-icon"><i class="fa-solid fa-folder"></i></div>
+                        <div class="quick-action-text">Quản lý DM</div>
+                    </a>
+                </div>
+                <div class="col-md-4 col-6">
+                    <a href="/AdminUser" class="quick-action-card">
+                        <div class="quick-action-icon"><i class="fa-solid fa-users"></i></div>
+                        <div class="quick-action-text">Quản lý Users</div>
+                    </a>
+                </div>
+                <div class="col-md-4 col-6">
+                    <a href="/AdminProduct/Create" class="quick-action-card">
+                        <div class="quick-action-icon"><i class="fa-solid fa-plus"></i></div>
+                        <div class="quick-action-text">Thêm SP mới</div>
+                    </a>
+                </div>
+                <div class="col-md-4 col-6">
+                    <a href="/AdminCategory/Create" class="quick-action-card">
+                        <div class="quick-action-icon"><i class="fa-solid fa-folder-plus"></i></div>
+                        <div class="quick-action-text">Thêm DM mới</div>
+                    </a>
+                </div>
+                <div class="col-md-4 col-6">
+                    <a href="/AdminUser/Create" class="quick-action-card">
+                        <div class="quick-action-icon"><i class="fa-solid fa-user-plus"></i></div>
+                        <div class="quick-action-text">Thêm User</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CHART SCRIPTS -->
+<script>
+    const chartFontColor = getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim() || '#6b7280';
+    const gridColor = getComputedStyle(document.documentElement).getPropertyValue('--border').trim() || '#e5e7eb';
+    const accentColor = '#7C3AED';
+
+    Chart.defaults.color = chartFontColor;
+    Chart.defaults.borderColor = gridColor;
+    Chart.defaults.font.family = 'Inter';
+
+    // Helper to format currency on axis
+    const formatAxisCurrency = (value) => {
+        if (value >= 1000000) return (value / 1000000).toFixed(1) + 'M';
+        if (value >= 1000) return (value / 1000).toFixed(0) + 'k';
+        return value;
+    };
+
+    // Helper for tooltip currency
+    const formatTooltipCurrency = (value) => {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+    };
+
+    // 1. Daily Revenue Chart
+    new Chart(document.getElementById("dailyRevenueChart"), {
+        type: 'line',
+        data: {
+            labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.DailyLabels)),
+            datasets: [{
+                label: "Doanh thu",
+                data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.DailyRevenue)),
+                borderColor: accentColor,
+                backgroundColor: "rgba(124,58,237,0.1)",
+                borderWidth: 3,
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: accentColor,
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        },
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false,
+            layout: {
+                padding: { left: 10, right: 10, top: 10, bottom: 0 }
+            },
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return "Doanh thu: " + formatTooltipCurrency(context.parsed.y);
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: formatAxisCurrency,
+                        padding: 8
+                    }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+
+    // 2. Category Sales Chart
+    new Chart(document.getElementById("categoryChart"), {
+        type: 'bar',
+        data: {
+            labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.CategoryLabels)),
+            datasets: [{
+                label: "Doanh thu",
+                data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.CategorySales)),
+                backgroundColor: ["#7C3AED","#10b981","#3b82f6","#f59e0b","#ef4444","#8b5cf6"],
+                borderRadius: 6,
+                borderSkipped: false
+            }]
+        },
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false,
+            layout: {
+                padding: { left: 10, right: 10, top: 10, bottom: 0 }
+            },
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return "Doanh thu: " + formatTooltipCurrency(context.parsed.y);
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: formatAxisCurrency,
+                        padding: 8
+                    }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+
+    // 3. Payment Method Chart
+    const rawPaymentLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.PaymentLabels));
+    const paymentLabelMap = {
+        "Cash": "Tiền mặt (COD)",
+        "Credit Card": "Thẻ tín dụng",
+        "Debit Card": "Thẻ ghi nợ"
+    };
+    const localizedPaymentLabels = rawPaymentLabels.map(label => paymentLabelMap[label] || label);
+
+    new Chart(document.getElementById("paymentChart"), {
+        type: 'doughnut',
+        data: {
+            labels: localizedPaymentLabels,
+            datasets: [{
+                data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.PaymentValues)),
+                backgroundColor: ["#10b981", "#3b82f6", "#f59e0b", "#ef4444"],
+                borderWidth: 0
+            }]
+        },
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
+            }
+        }
+    });
+</script>

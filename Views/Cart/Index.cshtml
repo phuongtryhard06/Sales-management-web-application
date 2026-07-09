@@ -1,0 +1,103 @@
+@model List<FreshMart.Models.CartItem>
+
+@{
+    ViewData["Title"] = "Giỏ hàng";
+}
+
+<!-- PAGE HEADER -->
+<div class="d-flex align-items-center justify-content-between mb-4 stagger-item">
+    <h4 class="fw-bold mb-0" style="color:var(--text-primary);">
+        <i class="fa-solid fa-cart-shopping me-2" style="color:var(--accent);"></i>Giỏ hàng của bạn
+    </h4>
+    <a href="/Products" class="btn-accent-outline" style="font-size:13px;">
+        <i class="fa-solid fa-arrow-left"></i> Tiếp tục mua sắm
+    </a>
+</div>
+
+<div id="cart-container">
+    @if (Model == null || !Model.Any())
+    {
+        <div class="empty-state stagger-item">
+            <div class="empty-state-icon">🛒</div>
+            <div class="empty-state-title">Giỏ hàng trống</div>
+            <div class="empty-state-text">Hãy thêm sản phẩm yêu thích vào giỏ hàng nhé!</div>
+            <a href="/Products" class="btn-accent">
+                <i class="fa-solid fa-bag-shopping"></i> Mua sắm ngay
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            <!-- CART ITEMS -->
+            <div class="col-lg-8" id="cart-items-list">
+                @foreach (var item in Model)
+                {
+                    <div class="cart-item-card stagger-item" data-product-id="@item.ProductId">
+                        <img src="~/uploads/@item.ImagePath"
+                             class="cart-item-img"
+                             alt="@item.Name"
+                             onerror="this.onerror=null; this.src='/images/placeholder.svg';" />
+
+                        <div class="cart-item-info">
+                            <div class="cart-item-title">@item.Name</div>
+                            <div style="font-size:13px;color:var(--text-muted);">Đơn giá: @item.Price.ToString("N0") ₫</div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-2">
+                            <form asp-action="Decrease" asp-controller="Cart" asp-route-id="@item.ProductId" method="post" class="cart-update-form" style="margin:0;">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="qty-btn btn-decrease" data-id="@item.ProductId" title="Giảm">−</button>
+                            </form>
+                            <span class="fw-bold cart-item-qty" style="min-width:30px;text-align:center;">@item.Quantity</span>
+                            <form asp-action="Increase" asp-controller="Cart" asp-route-id="@item.ProductId" method="post" class="cart-update-form" style="margin:0;">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="qty-btn btn-increase" data-id="@item.ProductId" title="Tăng">+</button>
+                            </form>
+                        </div>
+
+                        <div class="cart-item-price ms-3 cart-line-total" style="min-width:100px;text-align:right;">
+                            @((item.Price * item.Quantity).ToString("N0")) ₫
+                        </div>
+
+                        <form asp-action="Remove" asp-controller="Cart" asp-route-id="@item.ProductId" method="post" class="cart-remove-form" style="margin:0; display:inline-block;">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="table-action-btn danger ms-2 btn-remove" data-id="@item.ProductId" title="Xóa" style="border:none;background:none;padding:8px 8px;border-radius:var(--radius-sm);">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                }
+            </div>
+
+            <!-- ORDER SUMMARY -->
+            <div class="col-lg-4">
+                <div class="fm-card stagger-item" style="position:sticky;top:80px;">
+                    <div class="fm-card-body">
+                        <h5 class="fw-bold mb-3">
+                            <i class="fa-solid fa-receipt me-2" style="color:var(--accent);"></i>Tóm tắt đơn
+                        </h5>
+
+                        <div class="d-flex justify-content-between mb-2" style="font-size:14px;">
+                            <span class="text-muted">Tổng số lượng</span>
+                            <span class="fw-semibold" id="cart-total-count">@Model.Sum(i => i.Quantity) sản phẩm</span>
+                        </div>
+
+                        <hr style="border-color:var(--border);" />
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="fw-bold" style="font-size:16px;">Tổng cộng</span>
+                            <span class="fw-bold" id="cart-total-price" style="font-size:24px;color:var(--accent);">
+                                @Model.Sum(i => i.Price * i.Quantity).ToString("N0") ₫
+                            </span>
+                        </div>
+
+                        <a href="/Checkout" class="btn-accent d-block text-center" style="padding:14px;font-size:15px;">
+                            <i class="fa-solid fa-credit-card me-1"></i> Thanh toán
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,80 @@
+@{
+    ViewData["Title"] = "Đăng nhập";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng nhập - BizFlow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/site.css" />
+</head>
+<body style="margin:0;">
+
+<div class="auth-wrapper">
+    <div class="auth-card" style="animation: pageIn 0.5s ease-out;">
+
+        <!-- LEFT: Illustration -->
+        <div class="auth-illustration d-none d-md-flex">
+            <div class="auth-illustration-icon">🛒</div>
+            <h2>Chào mừng trở lại!</h2>
+            <p>Đăng nhập để tiếp tục mua sắm thực phẩm tươi sống.</p>
+        </div>
+
+        <!-- RIGHT: Form -->
+        <div class="auth-form-side">
+            <div class="d-flex align-items-center gap-2 mb-4">
+                <i class="fa-solid fa-chart-line" style="color:var(--accent);font-size:28px;"></i>
+                <span style="font-weight:800;font-size:22px;color:var(--accent);">BizFlow</span>
+            </div>
+
+            <div class="auth-form-title">Đăng nhập</div>
+            <div class="auth-form-subtitle">Nhập email và mật khẩu để tiếp tục</div>
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger d-flex align-items-center" style="border-radius:var(--radius-md);font-size:14px;">
+                    <i class="fa-solid fa-circle-xmark me-2"></i> @TempData["Error"]
+                </div>
+            }
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success d-flex align-items-center" style="border-radius:var(--radius-md);font-size:14px;">
+                    <i class="fa-solid fa-circle-check me-2"></i> @TempData["Success"]
+                </div>
+            }
+
+            <form method="post" data-loading>
+                @Html.AntiForgeryToken()
+                <div class="mb-3">
+                    <label class="fm-label">Email</label>
+                    <input type="email" class="fm-input" name="Email" placeholder="example@email.com" required />
+                </div>
+
+                <div class="mb-4">
+                    <label class="fm-label">Mật khẩu</label>
+                    <input type="password" class="fm-input" name="PasswordHash" placeholder="••••••••" required />
+                </div>
+
+                <button type="submit" class="btn-accent d-block w-100" style="padding:14px;font-size:15px;justify-content:center;">
+                    <i class="fa-solid fa-right-to-bracket me-1"></i> Đăng nhập
+                </button>
+            </form>
+
+            <div class="text-center mt-4" style="font-size:14px;color:var(--text-muted);">
+                Chưa có tài khoản?
+                <a href="/User/Register" style="font-weight:600;">Đăng ký ngay</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/site.js"></script>
+</body>
+</html>

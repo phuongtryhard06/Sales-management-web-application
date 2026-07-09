@@ -1,0 +1,129 @@
+@model FreshMart.Models.Category
+
+@{
+    ViewData["Title"] = "Chỉnh sửa danh mục";
+}
+
+<style>
+    .fm-container {
+        max-width: 720px;
+        margin: 30px auto;
+    }
+
+    .fm-card {
+        background: #fff;
+        padding: 45px;
+        border-radius: 22px;
+        box-shadow: 0 12px 32px rgba(0,0,0,0.10);
+    }
+
+    .fm-title {
+        font-size: 32px;
+        font-weight: 800;
+        text-align: center;
+        color: #15803d;
+        margin-bottom: 30px;
+    }
+
+    .fm-label {
+        font-weight: 600;
+        font-size: 16px;
+        margin-bottom: 6px;
+    }
+
+    .fm-input {
+        background: #fafafa;
+        height: 55px;
+        border-radius: 12px !important;
+        border: 1px solid #d1d5db;
+        padding-left: 14px;
+        font-size: 15px;
+        transition: 0.25s ease;
+    }
+
+        .fm-input:focus {
+            border-color: #22c55e;
+            background: white;
+            box-shadow: 0 0 0 .15rem rgba(34,197,94,0.25);
+        }
+
+    textarea.fm-input {
+        height: auto;
+        padding-top: 12px;
+        min-height: 120px;
+    }
+
+    .btn-back {
+        border: 1px solid #cbd5e1;
+        padding: 10px 28px;
+        font-size: 16px;
+        border-radius: 10px;
+        color: #475569;
+        transition: 0.25s ease;
+    }
+
+        .btn-back:hover {
+            background: #f1f5f9;
+        }
+
+    .btn-save {
+        background-color: #15803d;
+        color: #fff;
+        padding: 12px 35px;
+        font-size: 16px;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: 0.25s ease;
+        border: none;
+    }
+
+        .btn-save:hover {
+            background-color: #166534;
+            transform: translateY(-2px);
+        }
+</style>
+
+<div class="fm-container">
+    <div class="fm-card">
+
+        <h2 class="fm-title">Chỉnh sửa danh mục</h2>
+
+        <form method="post">
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" name="CategoryId" value="@Model.CategoryId" />
+
+            <!-- Category Name -->
+            <div class="mb-4">
+                <label class="fm-label">Tên danh mục</label>
+                <input type="text"
+                       name="CategoryName"
+                       class="form-control fm-input"
+                       value="@Model.CategoryName"
+                       placeholder="Nhập tên danh mục"
+                       required />
+            </div>
+
+            <!-- Mô tả -->
+            <div class="mb-4">
+                <label class="fm-label">Mô tả</label>
+                <textarea name="Description"
+                          class="form-control fm-input"
+                          placeholder="Nhập mô tả (tùy chọn)">@Model.Description</textarea>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between mt-4">
+                <a href="/AdminCategory" class="btn-back">
+                    ← Quay lại
+                </a>
+
+                <button class="btn-save">
+                    Cập nhật danh mục
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>

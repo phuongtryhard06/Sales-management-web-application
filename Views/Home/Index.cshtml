@@ -1,0 +1,169 @@
+@model List<FreshMart.Models.Product>
+
+@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+<!-- HERO SECTION -->
+<div class="hero-modern mb-5 stagger-item">
+    <div class="hero-content">
+        <h1>Thực phẩm Tươi sạch<br/>Giao tận cửa nhà bạn</h1>
+        <p>Đặt hàng trái cây tươi, rau củ, sữa & nhiều hơn nữa — giao nhanh trong ngày.</p>
+        <a href="/Products" class="hero-btn">
+            <i class="fa-solid fa-bag-shopping"></i> Mua sắm ngay
+        </a>
+    </div>
+</div>
+
+<!-- CATEGORIES -->
+<h2 class="section-title">Danh mục nổi bật</h2>
+<div class="row g-3 mb-5">
+    <div class="col-lg-3 col-md-6 col-6 stagger-item">
+        <a href="/Products/Category/1" style="text-decoration:none;">
+            <div class="category-card">
+                <div class="category-card-icon">🍎</div>
+                <div class="category-card-name">Trái cây</div>
+            </div>
+        </a>
+    </div>
+    <div class="col-lg-3 col-md-6 col-6 stagger-item">
+        <a href="/Products/Category/2" style="text-decoration:none;">
+            <div class="category-card">
+                <div class="category-card-icon">🥦</div>
+                <div class="category-card-name">Rau củ</div>
+            </div>
+        </a>
+    </div>
+    <div class="col-lg-3 col-md-6 col-6 stagger-item">
+        <a href="/Products/Category/3" style="text-decoration:none;">
+            <div class="category-card">
+                <div class="category-card-icon">🥛</div>
+                <div class="category-card-name">Sữa & Bơ</div>
+            </div>
+        </a>
+    </div>
+    <div class="col-lg-3 col-md-6 col-6 stagger-item">
+        <a href="/Products/Category/4" style="text-decoration:none;">
+            <div class="category-card">
+                <div class="category-card-icon">🍞</div>
+                <div class="category-card-name">Bánh mì</div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<!-- FEATURED PRODUCTS -->
+<h2 class="section-title">Sản phẩm nổi bật</h2>
+<div class="row g-3 mb-5">
+    @foreach (var item in Model)
+    {
+        <div class="col-xl-3 col-lg-4 col-md-6 stagger-item">
+            <div class="product-card-premium">
+                <div class="product-card-img-wrap">
+                    <img src="~/uploads/@item.ImagePath"
+                         alt="@item.Name"
+                         onerror="this.onerror=null; this.src='/images/placeholder.svg';" />
+                    @if (item.DiscountPrice > 0 && item.DiscountPrice < item.Price)
+                    {
+                        <span class="product-badge sale">Giảm giá</span>
+                    }
+                    else if (item.Stock <= 0)
+                    {
+                        <span class="product-badge out">Hết hàng</span>
+                    }
+                </div>
+                <div class="product-card-body">
+                    <div class="product-card-title">@item.Name</div>
+                    <div class="product-card-desc">@item.Description</div>
+                    <div class="mt-2 mb-1">
+                        @if (item.Stock > 0)
+                        {
+                            <div class="text-success small fw-semibold">
+                                 Còn @item.Stock sp
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-danger small fw-semibold">
+                                 Hết hàng
+                            </div>
+                        }
+                    </div>
+                    <div class="product-card-bottom">
+                        <div>
+                            <span class="product-price">@item.Price.ToString("N0") ₫</span>
+                            @if (item.DiscountPrice.HasValue && item.DiscountPrice.Value > 0 && item.DiscountPrice.Value < item.Price)
+                            {
+                                <span class="product-price-old">@item.DiscountPrice.Value.ToString("N0") ₫</span>
+                            }
+                        </div>
+                        <form asp-action="Add" asp-controller="Cart" asp-route-id="@item.ProductId" method="post" class="ajax-cart-form" style="margin:0;">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn-cart" title="Thêm vào giỏ hàng" @(item.Stock <= 0 ? "disabled style=opacity:0.5;cursor:not-allowed;" : "")>
+                                <i class="fa-solid fa-cart-plus"></i>
+                            </button>
+                        </form>
+                        </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- DEAL BANNER -->
+<div class="deal-banner stagger-item">
+    <h2 class="fw-bold mb-2" style="font-size:28px;">🔥 Ưu đãi & Giảm giá hàng tuần</h2>
+    <p class="fs-5 mb-0" style="opacity:0.9;">Tiết kiệm tới 30% cho thực phẩm tươi sống mỗi tuần!</p>
+</div>
+
+<!-- WHY CHOOSE US -->
+<h2 class="section-title mt-5">Tại sao chọn chúng tôi?</h2>
+<div class="row g-3 mb-5">
+    <div class="col-md-4 stagger-item">
+        <div class="feature-card">
+            <div class="feature-icon">🚚</div>
+            <h5 class="fw-bold">Giao hàng nhanh</h5>
+            <p class="text-muted mb-0" style="font-size:14px;">Thực phẩm tươi được giao tận nhà trong vài giờ.</p>
+        </div>
+    </div>
+    <div class="col-md-4 stagger-item">
+        <div class="feature-card">
+            <div class="feature-icon">🥬</div>
+            <h5 class="fw-bold">Chất lượng tươi</h5>
+            <p class="text-muted mb-0" style="font-size:14px;">Chỉ chọn lọc rau quả tốt nhất từ nông trại.</p>
+        </div>
+    </div>
+    <div class="col-md-4 stagger-item">
+        <div class="feature-card">
+            <div class="feature-icon">💳</div>
+            <h5 class="fw-bold">Thanh toán bảo mật</h5>
+            <p class="text-muted mb-0" style="font-size:14px;">Giao dịch an toàn với mã hóa tiên tiến.</p>
+        </div>
+    </div>
+</div>
+
+<!-- TESTIMONIALS -->
+<h2 class="section-title">Khách hàng nói gì?</h2>
+<div class="row g-3 mb-5">
+    <div class="col-md-4 stagger-item">
+        <div class="testimonial-card">
+            <div style="color:#facc15;font-size:18px;margin-bottom:10px;">⭐⭐⭐⭐⭐</div>
+            <p class="mb-2" style="font-style:italic;">"Chất lượng tuyệt vời! Giao hàng siêu nhanh."</p>
+            <strong style="color:var(--accent);">— nguyễn minh phương</strong>
+        </div>
+    </div>
+    <div class="col-md-4 stagger-item">
+        <div class="testimonial-card">
+            <div style="color:#facc15;font-size:18px;margin-bottom:10px;">⭐⭐⭐⭐⭐</div>
+            <p class="mb-2" style="font-style:italic;">"Dịch vụ tốt nhất! Luôn tươi, giá hợp lý."</p>
+            <strong style="color:var(--accent);">— Machine Learning - ML</strong>
+        </div>
+    </div>
+    <div class="col-md-4 stagger-item">
+        <div class="testimonial-card">
+            <div style="color:#facc15;font-size:18px;margin-bottom:10px;">⭐⭐⭐⭐⭐</div>
+            <p class="mb-2" style="font-style:italic;">"Rất thích sự đa dạng sản phẩm! Nhất định sẽ mua lại."</p>
+            <strong style="color:var(--accent);">— Full Stack</strong>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,125 @@
+@model List<FreshMart.Models.Product>
+
+@{
+    ViewData["Title"] = "Quản lý sản phẩm";
+}
+
+<!-- PAGE HEADER -->
+@Html.AntiForgeryToken()
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h4 class="fw-bold mb-1" style="color:var(--text-primary);">
+            <i class="fa-solid fa-box me-2" style="color:var(--accent);"></i>Quản lý sản phẩm
+        </h4>
+        <p class="text-muted mb-0" style="font-size:13px;">Tổng cộng @Model.Count sản phẩm</p>
+    </div>
+    <a href="/AdminProduct/Create" class="btn-accent">
+        <i class="fa-solid fa-plus"></i> Thêm sản phẩm
+    </a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="empty-state">
+        <div class="empty-state-icon">📦</div>
+        <div class="empty-state-title">Chưa có sản phẩm</div>
+        <div class="empty-state-text">Bấm nút "Thêm sản phẩm" để bắt đầu.</div>
+    </div>
+}
+else
+{
+    <div class="fm-table-card">
+        <table class="fm-table">
+            <thead>
+                <tr>
+                    <th style="width:70px;">Ảnh</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Danh mục</th>
+                    <th>Giá</th>
+                    <th>Tồn kho</th>
+                    <th style="width:120px;text-align:center;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model)
+                {
+                    <tr>
+                        <td>
+                            <img src="~/uploads/@p.ImagePath"
+                                 style="height:48px;width:48px;object-fit:cover;border-radius:var(--radius-sm);"
+                                 onerror="this.onerror=null; this.src='/images/placeholder.svg';" />
+                        </td>
+                        <td class="fw-semibold">@p.Name</td>
+                        <td>
+                            <span class="badge-status admin">@p.Category?.CategoryName</span>
+                        </td>
+                         <td class="fw-bold" style="color:var(--accent);">@p.Price.ToString("N0") ₫</td>
+                        <td>
+                            @if (p.Stock <= 0)
+                            {
+                                <span class="badge-status cancelled">Hết hàng</span>
+                            }
+                            else if (p.Stock <= 5)
+                            {
+                                <span class="badge-status pending">@p.Stock</span>
+                            }
+                            else
+                            {
+                                <span class="badge-status completed">@p.Stock</span>
+                            }
+                        </td>
+                        <td class="text-center">
+                            <a href="/AdminProduct/Edit/@p.ProductId" class="table-action-btn" title="Sửa">
+                                <i class="fa-solid fa-pen"></i>
+                            </a>
+                            <a href="/AdminProduct/Delete/@p.ProductId"
+                               class="table-action-btn danger"
+                               data-confirm-delete
+                               data-name="@p.Name"
+                               title="Xóa">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- PAGINATION -->
+    @if (ViewBag.TotalPages > 1)
+    {
+        <nav aria-label="Admin product pagination" class="mt-4 d-flex justify-content-end stagger-item">
+            <ul class="pagination pagination-modern">
+                <!-- PREV -->
+                <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" href="?page=@(ViewBag.CurrentPage - 1)">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </a>
+                </li>
+
+                <!-- PAGE NUMBERS -->
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    if (i == 1 || i == ViewBag.TotalPages || Math.Abs(i - ViewBag.CurrentPage) <= 2)
+                    {
+                        <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                            <a class="page-link" href="?page=@i">@i</a>
+                        </li>
+                    }
+                    else if (Math.Abs(i - ViewBag.CurrentPage) == 3)
+                    {
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    }
+                }
+
+                <!-- NEXT -->
+                <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                    <a class="page-link" href="?page=@(ViewBag.CurrentPage + 1)">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
+}

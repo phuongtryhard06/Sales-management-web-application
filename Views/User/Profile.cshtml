@@ -1,0 +1,288 @@
+@model FreshMart.Models.ProfileViewModel
+
+@{
+    ViewData["Title"] = "Hồ sơ của tôi";
+}
+
+<style>
+    .profile-card {
+        background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+        border-radius: 1.5rem;
+        padding: 40px;
+        box-shadow: 0 8px 30px rgba(124, 58, 237, 0.15);
+    }
+
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #7C3AED, #a78bfa);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        color: white;
+        margin: 0 auto 15px;
+        box-shadow: 0 6px 20px rgba(124, 58, 237, 0.3);
+        overflow: hidden;
+        border: 4px solid white;
+        position: relative;
+        cursor: pointer;
+    }
+
+    .profile-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .avatar-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0,0,0,0.5);
+        color: white;
+        font-size: 12px;
+        padding: 4px 0;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .profile-avatar:hover .avatar-overlay {
+        opacity: 1;
+    }
+
+    .preset-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+        gap: 12px;
+        max-height: 300px;
+        overflow-y: auto;
+        padding: 10px;
+        background: white;
+        border-radius: 1rem;
+        border: 1px solid #e5e7eb;
+    }
+
+    .preset-item {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: transform 0.2s, border 0.2s;
+        border: 3px solid transparent;
+        object-fit: cover;
+    }
+
+    .preset-item:hover {
+        transform: scale(1.1);
+        border-color: #7C3AED;
+    }
+
+    .preset-item.active {
+        border-color: #7C3AED;
+        box-shadow: 0 0 10px rgba(124,58,237,0.3);
+    }
+
+    .profile-name {
+        font-size: 28px;
+        font-weight: 800;
+        color: #1f2937;
+        text-align: center;
+    }
+
+    .profile-role {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        border-radius: 1rem;
+        padding: 20px;
+        text-align: center;
+        background: white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-number {
+        font-size: 28px;
+        font-weight: 800;
+        color: #7C3AED;
+    }
+
+    .stat-label {
+        color: #6b7280;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .info-row {
+        padding: 15px 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .info-label {
+        font-weight: 700;
+        color: #6b7280;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .info-value {
+        font-weight: 600;
+        color: #1f2937;
+        font-size: 16px;
+    }
+
+    .btn-profile-action {
+        padding: 10px 25px;
+        border-radius: 25px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+    }
+</style>
+
+<!-- SUCCESS/ERROR MESSAGES -->
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show rounded-pill shadow-sm" role="alert">
+        ✅ @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="profile-card">
+            <!-- AVATAR & NAME -->
+            <div class="text-center mb-4">
+                <div class="profile-avatar" onclick="document.getElementById('avatarUpload').click()">
+                    @if (!string.IsNullOrEmpty(Model.AvatarPath))
+                    {
+                        <img src="~/uploads/avatars/@Model.AvatarPath" alt="Avatar" 
+                             onerror="this.onerror=null; this.src='/images/placeholder.svg';" />
+                    }
+                    else
+                    {
+                        <span>@Model.FullName?.Substring(0, 1).ToUpper()</span>
+                    }
+                    <div class="avatar-overlay">Đổi ảnh</div>
+                </div>
+
+                <!-- Hidden form for upload -->
+                <form id="avatarForm" asp-action="UpdateAvatar" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input type="file" id="avatarUpload" name="avatarFile" class="d-none" accept="image/*" onchange="submitAvatarForm()" />
+                    <input type="hidden" id="presetName" name="presetName" />
+                </form>
+
+                <h2 class="profile-name">@Model.FullName</h2>
+                <div class="profile-role">
+                    <span class="badge px-4 py-2 rounded-pill fs-6"
+                          style="background: @(Model.Role == "Admin" ? "#dc3545" : "#7C3AED"); color: white;">
+                        @(Model.Role == "Admin" ? "🛡️ Quản trị viên" : "🛒 Khách hàng")
+                    </span>
+                </div>
+            </div>
+
+            <!-- PRESET GALLERY -->
+            @if (Model.PresetIcons != null && Model.PresetIcons.Any())
+            {
+                <div class="mb-5">
+                    <h6 class="fw-bold text-secondary mb-3 text-center">
+                        <i class="fa-solid fa-shapes me-2"></i>Chọn ảnh từ bộ sưu tập
+                    </h6>
+                    <div class="preset-gallery scrollbar-thin">
+                        @foreach (var icon in Model.PresetIcons)
+                        {
+                            var iconPath = "presets/" + icon;
+                            <img src="~/uploads/avatars/@iconPath" 
+                                 class="preset-item @(Model.AvatarPath == iconPath ? "active" : "")" 
+                                 title="@icon"
+                                 onclick="selectPreset('@icon')" />
+                        }
+                    </div>
+                </div>
+            }
+
+    <!-- STATS -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-number">@Model.TotalOrders</div>
+                <div class="stat-label">Đơn hàng</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-number">@Model.TotalSpent.ToString("N0") ₫</div>
+                <div class="stat-label">Tổng chi tiêu</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-number">@Model.CreatedAt.ToString("dd/MM/yyyy")</div>
+                <div class="stat-label">Ngày tham gia</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- INFO DETAILS -->
+    <div class="card border-0 rounded-4 shadow-sm p-4">
+        <h5 class="fw-bold text-secondary mb-3">📋 Thông tin tài khoản</h5>
+
+        <div class="info-row">
+            <div class="info-label">Họ và tên</div>
+            <div class="info-value">@Model.FullName</div>
+        </div>
+
+        <div class="info-row">
+            <div class="info-label">Email</div>
+            <div class="info-value">@Model.Email</div>
+        </div>
+
+        <div class="info-row">
+            <div class="info-label">Vai trò</div>
+            <div class="info-value">@Model.Role</div>
+        </div>
+
+        <div class="info-row" style="border-bottom: none;">
+            <div class="info-label">Ngày tạo tài khoản</div>
+            <div class="info-value">@Model.CreatedAt.ToString("dddd, dd MMMM yyyy")</div>
+        </div>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="text-center mt-4">
+        <a href="/User/ChangePassword" class="btn btn-profile-action me-2"
+           style="background: #7C3AED; color: white;">
+            🔒 Đổi mật khẩu
+        </a>
+        <a href="/Checkout/MyOrders" class="btn btn-profile-action btn-outline-secondary">
+            📦 Xem đơn hàng
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function submitAvatarForm() {
+            const input = document.getElementById('avatarUpload');
+            if (input.files && input.files[0]) {
+                document.getElementById('avatarForm').submit();
+            }
+        }
+
+        function selectPreset(name) {
+            document.getElementById('presetName').value = name;
+            document.getElementById('avatarForm').submit();
+        }
+    </script>
+}

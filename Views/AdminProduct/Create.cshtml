@@ -1,0 +1,144 @@
+@model FreshMart.Models.Product
+
+@{
+    ViewData["Title"] = "Thêm sản phẩm mới";
+}
+
+<h2 class="fw-bold text-success mb-4">Thêm sản phẩm mới</h2>
+
+<div class="card shadow-lg border-0 rounded-4 p-4">
+
+    <form method="post" enctype="multipart/form-data">
+
+        @Html.ValidationSummary(false, "", new { @class = "text-danger fw-bold mb-3" })
+        <div class="row g-4">
+
+            <!-- LEFT FORM -->
+            <div class="col-md-7">
+
+                <!-- NAME -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Tên sản phẩm</label>
+                    <input type="text" name="Name"
+                           class="form-control form-control-lg rounded-3"
+                           placeholder="Nhập tên sản phẩm" required />
+                </div>
+
+                <!-- CATEGORY -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Danh mục</label>
+                    <select name="CategoryId"
+                            class="form-select form-select-lg rounded-3"
+                            required>
+                        <option value="">Chọn danh mục</option>
+                        @foreach (var c in ViewBag.Categories)
+                        {
+                            <option value="@c.CategoryId">@c.CategoryName</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- PRICE & STOCK -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Giá bán (₫)</label>
+                        <input type="number" step="1000"
+                               class="form-control form-control-lg rounded-3"
+                               name="Price"
+                               placeholder="0"
+                               required />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Số lượng tồn kho</label>
+                        <input type="number"
+                               class="form-control form-control-lg rounded-3"
+                               name="Stock"
+                               placeholder="0"
+                               min="0"
+                               value="0"
+                               required />
+                    </div>
+                </div>
+
+                <!-- WEIGHT -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Khối lượng / Quy cách</label>
+                    <input type="text"
+                           class="form-control form-control-lg rounded-3"
+                           name="Weight"
+                           placeholder="Ví dụ: 500g, 1kg" />
+                </div>
+
+                <!-- DESCRIPTION -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Mô tả sản phẩm</label>
+                    <textarea class="form-control form-control-lg rounded-3"
+                              name="Description"
+                              rows="4"
+                              placeholder="Nhập mô tả (không bắt buộc)"></textarea>
+                </div>
+
+            </div>
+
+            <!-- RIGHT IMAGE PREVIEW -->
+            <div class="col-md-5">
+
+                <label class="form-label fw-semibold">Tải lên hình ảnh</label>
+                <div class="card shadow-sm border-0 rounded-4 p-3 text-center mb-3">
+                    <img id="previewImage"
+                         src="/images/placeholder.png"
+                         class="img-fluid rounded-3"
+                         style="max-height: 240px; object-fit: cover; opacity: 0.7;" />
+                </div>
+
+                <input type="file" name="imageFile"
+                       class="form-control form-control-lg rounded-3"
+                       accept="image/*"
+                       onchange="previewNewImage(event)" required />
+
+            </div>
+
+        </div>
+
+        <!-- BUTTONS -->
+        <div class="mt-4">
+            <button class="btn btn-success btn-lg rounded-pill px-4 me-2">
+                Lưu Sản phẩm
+            </button>
+
+            <a href="/AdminProduct"
+               class="btn btn-outline-secondary btn-lg rounded-pill px-4">
+                Quay lại
+            </a>
+        </div>
+
+    </form>
+
+</div>
+
+<!-- IMAGE PREVIEW SCRIPT -->
+<script>
+    function previewNewImage(event) {
+        const previewImage = document.getElementById("previewImage");
+        previewImage.style.opacity = 1;
+        previewImage.src = URL.createObjectURL(event.target.files[0]);
+    }
+</script>
+
+<!-- STYLING -->
+<style>
+    .card {
+        border-radius: 1.25rem !important;
+    }
+
+    .form-control, .form-select {
+        border-radius: 0.75rem !important;
+        padding: 12px 16px !important;
+        font-size: 1rem !important;
+    }
+
+    #previewImage {
+        transition: 0.25s ease;
+        border-radius: 1rem;
+    }
+</style>

@@ -1,0 +1,124 @@
+@model List<FreshMart.Models.Order>
+
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+}
+
+<!-- SUCCESS/ERROR -->
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show rounded-pill shadow-sm" role="alert">
+        ✅ @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show rounded-pill shadow-sm" role="alert">
+        ❌ @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<h2 class="fw-bold mb-4" style="color: #7C3AED;">📦 Đơn hàng của tôi</h2>
+
+@if (!Model.Any())
+{
+    <div class="card shadow-sm border-0 rounded-4 p-5 text-center">
+        <div style="font-size: 60px; margin-bottom: 15px;">🛒</div>
+        <h5 class="text-secondary mb-3">Bạn chưa có đơn hàng nào.</h5>
+        <a href="/Products" class="btn px-4 py-2 rounded-pill fw-bold" style="background: #7C3AED; color: white;">
+            Mua sắm ngay →
+        </a>
+    </div>
+}
+else
+{
+    <!-- ORDER STATS -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 rounded-4 shadow-sm p-3 text-center">
+                <div class="fw-bold fs-4" style="color: #7C3AED;">@Model.Count</div>
+                <div class="text-muted small fw-semibold">Tổng đơn hàng</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 rounded-4 shadow-sm p-3 text-center">
+                <div class="fw-bold fs-4 text-warning">@Model.Count(o => o.Status == "Pending")</div>
+                <div class="text-muted small fw-semibold">Đang chờ</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 rounded-4 shadow-sm p-3 text-center">
+                <div class="fw-bold fs-4 text-success">@Model.Count(o => o.Status == "Completed")</div>
+                <div class="text-muted small fw-semibold">Hoàn thành</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 rounded-4 shadow-sm p-3 text-center">
+                <div class="fw-bold fs-4 text-danger">@Model.Count(o => o.Status == "Cancelled")</div>
+                <div class="text-muted small fw-semibold">Đã hủy</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4 p-4">
+        <table class="table table-borderless align-middle">
+            <thead>
+                <tr class="text-secondary small">
+                    <th>Mã ĐH</th>
+                    <th>Ngày đặt</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th class="text-end">Thao tác</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var o in Model)
+                {
+                    var badgeClass = o.Status switch
+                    {
+                        "Completed" => "bg-success",
+                        "Cancelled" => "bg-danger",
+                        _ => "bg-warning text-dark"
+                    };
+                    var statusText = o.Status switch
+                    {
+                        "Completed" => "✔ Hoàn thành",
+                        "Cancelled" => "✕ Đã hủy",
+                        _ => "⏳ Đang chờ"
+                    };
+
+                    <tr class="orders-row">
+                        <td class="fw-semibold">#@o.OrderId</td>
+                        <td>@o.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td class="fw-bold" style="color: #7C3AED;">@o.TotalAmount.ToString("N0") ₫</td>
+                        <td>
+                            <span class="badge @badgeClass px-3 py-2 rounded-pill shadow-sm">
+                                @statusText
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a href="/Checkout/OrderDetails/@o.OrderId"
+                               class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1" style="border-color: #7C3AED; color: #7C3AED;">
+                                Chi tiết →
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<style>
+    .orders-row:hover {
+        background-color: #f5f3ff !important;
+        transition: 0.25s ease;
+    }
+
+    .card {
+        border-radius: 1rem !important;
+    }
+</style>

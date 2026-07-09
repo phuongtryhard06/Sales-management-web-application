@@ -1,0 +1,283 @@
+@using Microsoft.AspNetCore.Http
+
+@{
+    var userName = Context.Session.GetString("UserName");
+    var userRole = Context.Session.GetString("UserRole");
+    var userAvatar = Context.Session.GetString("UserAvatar");
+    var isAdmin = userRole == "Admin";
+    
+    // FALLBACK INITIAL
+    var userInitial = !string.IsNullOrEmpty(userName) ? userName.Substring(0, 1).ToUpper() : "?";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BizFlow</title>
+    <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <!-- Bootstrap 5.3 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+
+    <!-- Toastify CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    
+    <!-- BizFlow Design System -->
+    <link rel="stylesheet" href="~/css/site.css" />
+
+    @RenderSection("Styles", required: false)
+</head>
+
+<body>
+
+@if (isAdmin)
+{
+    <!-- ============================================
+         ADMIN LAYOUT: Sidebar + Topbar + Main
+         ============================================ -->
+
+    <!-- SIDEBAR OVERLAY (mobile) -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-brand">
+            <i class="fa-solid fa-chart-line"></i> BizFlow
+        </div>
+
+        <ul class="sidebar-nav">
+            <li class="sidebar-nav-item">
+                <a href="/Admin/Dashboard" class="sidebar-nav-link">
+                    <i class="fa-solid fa-chart-pie"></i> Bảng điều khiển
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="/AdminProduct" class="sidebar-nav-link">
+                    <i class="fa-solid fa-box"></i> Sản phẩm
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="/AdminCategory" class="sidebar-nav-link">
+                    <i class="fa-solid fa-folder"></i> Danh mục
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="/AdminUser" class="sidebar-nav-link">
+                    <i class="fa-solid fa-users"></i> Người dùng
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="/AdminOrder" class="sidebar-nav-link">
+                    <i class="fa-solid fa-receipt"></i> Quản lý Đơn hàng
+                </a>
+            </li>
+
+            <hr class="sidebar-divider" />
+
+            <li class="sidebar-nav-item">
+                <a href="/User/Profile" class="sidebar-nav-link">
+                    <i class="fa-solid fa-user-circle"></i> Hồ sơ
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="/User/ChangePassword" class="sidebar-nav-link">
+                    <i class="fa-solid fa-lock"></i> Đổi mật khẩu
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="/User/Logout" class="sidebar-nav-link" style="color:#ef4444;">
+                <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+            </a>
+        </div>
+    </aside>
+
+    <!-- TOPBAR -->
+    <header class="admin-topbar">
+        <div class="d-flex align-items-center gap-3">
+            <button class="topbar-btn d-lg-none" id="sidebarToggle">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="topbar-search d-none d-md-block">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Tìm kiếm..." />
+            </div>
+        </div>
+
+        <div class="topbar-actions">
+            <button class="topbar-btn" id="darkModeToggle" title="Chuyển chế độ sáng/tối">
+                <i id="darkModeIcon" class="fa-solid fa-moon"></i>
+            </button>
+
+            <div class="dropdown">
+                <button class="topbar-btn dropdown-toggle" data-bs-toggle="dropdown" style="width:auto;padding:0 8px;gap:8px;border-radius:12px;">
+                    <div class="navbar-avatar-container">
+                        @if (!string.IsNullOrEmpty(userAvatar))
+                        {
+                            <img src="~/uploads/avatars/@userAvatar" class="navbar-avatar-img" alt="Avatar" />
+                        }
+                        else
+                        {
+                            <div class="navbar-avatar-initial">@userInitial</div>
+                        }
+                    </div>
+                    <span class="d-none d-md-inline fw-semibold" style="font-size:13px;">@userName</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                    <li><a class="dropdown-item" href="/User/Profile"><i class="fa-solid fa-user me-2"></i>Hồ sơ</a></li>
+                    <li><a class="dropdown-item" href="/User/ChangePassword"><i class="fa-solid fa-lock me-2"></i>Đổi mật khẩu</a></li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li><a class="dropdown-item text-danger" href="/User/Logout"><i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="admin-main">
+        <!-- TOAST NOTIFICATIONS -->
+        @if (TempData["Success"] != null)
+        {
+            <div class="fm-toast">
+                <div class="alert alert-success d-flex align-items-center">
+                    <i class="fa-solid fa-circle-check me-2"></i> @TempData["Success"]
+                </div>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="fm-toast">
+                <div class="alert alert-danger d-flex align-items-center">
+                    <i class="fa-solid fa-circle-xmark me-2"></i> @TempData["Error"]
+                </div>
+            </div>
+        }
+
+        <div class="page-content">
+            @RenderBody()
+        </div>
+    </main>
+}
+else
+{
+    <!-- ============================================
+         CUSTOMER LAYOUT: Navbar + Content + Footer
+         ============================================ -->
+
+    <div class="d-flex flex-column min-vh-100">
+        <!-- NAVBAR -->
+        <nav class="customer-navbar">
+            <div class="container d-flex align-items-center justify-content-between">
+                <a href="/" style="font-size:22px;font-weight:800;color:var(--accent);text-decoration:none;">
+                    <i class="fa-solid fa-chart-line me-1"></i>BizFlow
+                </a>
+
+                <div class="d-flex align-items-center gap-2">
+                    <a href="/" class="nav-purple d-none d-md-inline-block">
+                        <i class="fa-solid fa-house me-1"></i>Trang chủ
+                    </a>
+                    <a href="/Products" class="nav-purple d-none d-md-inline-block">
+                        <i class="fa-solid fa-store me-1"></i>Sản phẩm
+                    </a>
+                    <a href="/Cart" class="nav-purple position-relative">
+                        <i class="fa-solid fa-cart-shopping me-1"></i>Giỏ hàng
+                        <span class="cart-badge badge rounded-pill bg-danger" 
+                              style="font-size: 10px; padding: 2px 6px; vertical-align: top; margin-left: -5px; display: none;">0</span>
+                    </a>
+
+                    @if (string.IsNullOrEmpty(userName))
+                    {
+                        <a href="/User/Login" class="btn-accent" style="padding:8px 18px;font-size:13px;">
+                            <i class="fa-solid fa-right-to-bracket"></i> Đăng nhập
+                        </a>
+                    }
+                    else
+                    {
+                        <a href="/Checkout/MyOrders" class="nav-purple">
+                            <i class="fa-solid fa-box me-1"></i>Đơn hàng
+                        </a>
+
+                        <div class="dropdown">
+                            <button class="topbar-btn dropdown-toggle" data-bs-toggle="dropdown" style="width:auto;padding:0 8px;gap:6px;font-size:13px;border-radius:12px;">
+                                <div class="navbar-avatar-container">
+                                    @if (!string.IsNullOrEmpty(userAvatar))
+                                    {
+                                        <img src="~/uploads/avatars/@userAvatar" class="navbar-avatar-img" alt="Avatar" />
+                                    }
+                                    else
+                                    {
+                                        <div class="navbar-avatar-initial">@userInitial</div>
+                                    }
+                                </div>
+                                <span class="d-none d-sm-inline">@userName</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                <li><a class="dropdown-item" href="/User/Profile"><i class="fa-solid fa-user me-2"></i>Hồ sơ</a></li>
+                                <li><a class="dropdown-item" href="/Checkout/MyOrders"><i class="fa-solid fa-box me-2"></i>Đơn hàng</a></li>
+                                <li><a class="dropdown-item" href="/User/ChangePassword"><i class="fa-solid fa-lock me-2"></i>Đổi mật khẩu</a></li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li><a class="dropdown-item text-danger" href="/User/Logout"><i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất</a></li>
+                            </ul>
+                        </div>
+                    }
+
+                    <button class="topbar-btn" id="darkModeToggle" title="Chuyển chế độ">
+                        <i id="darkModeIcon" class="fa-solid fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- TOAST NOTIFICATIONS (handled by site.js) -->
+        <script>
+            window.fmToastSuccess = "@(TempData["Success"]?.ToString() ?? "")";
+            window.fmToastError = "@(TempData["Error"]?.ToString() ?? "")";
+        </script>
+
+        <!-- MAIN CONTENT -->
+        <div class="container mt-4 page-content flex-grow-1">
+            @RenderBody()
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Initialize cart badge with session value
+                const cartCount = @(Context.Session.GetObject<List<CartItem>>("Cart")?.Sum(i => i.Quantity) ?? 0);
+                const badge = document.querySelector('.cart-badge');
+                if (badge && cartCount > 0) {
+                    badge.textContent = cartCount;
+                    badge.style.display = 'inline-block';
+                }
+            });
+        </script>
+
+        <!-- FOOTER -->
+        <footer class="fm-footer mt-auto">
+            <div class="container">
+                <p class="mb-0">©  ☆❤NMP❤☆ -dev</p>
+            </div>
+        </footer>
+    </div>
+}
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script src="~/js/site.js"></script>
+@RenderSection("Scripts", required: false)
+
+</body>
+</html>
